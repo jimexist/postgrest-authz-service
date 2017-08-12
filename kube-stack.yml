@@ -1,0 +1,64 @@
+apiVersion: apps/v1beta1
+kind: List
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    name: authz-service
+  spec:
+    type: NodePort
+    selector:
+      app: postgrest-deployment
+    ports:
+      - protocol: "TCP"
+        port: 3000
+        targetPort: 3000
+        nodePort: 30001
+        name: "http"
+- apiVersion: apps/v1beta1
+  kind: Deployment
+  metadata:
+    name: postgrest-deployment
+  spec:
+    replicas: 1
+    template:
+      metadata:
+        labels:
+          app: postgres
+      spec:
+        containers:
+        - name: postgres
+          image: postgres:9.6-alpine
+          env:
+          - name: POSTGRES_DB
+            value: "authz"
+          - name: POSTGRES_USER
+            value: "postgres"
+          - name: POSTGRES_PASSWORD
+            value: "pass"
+          ports:
+          - containerPort: 5432
+        - name: postgrest
+          image: begriffs/postgrest:v0.4.2.0
+          ports:
+          - containerPort: 3000
+          volumeMounts:
+          - mountPath: /etc/postgrest.conf
+            name: postgrest-config
+          env:
+          - name: PGRST_DB_URI
+            value: "postgres://postgres:pass@postgres:5432/authz"
+          - name: PGRST_DB_SCHEMA
+            value: "public"
+          - name: PGRST_DB_ANON_ROLE
+            value: "postgres"
+          - name: PGRST_SERVER_HOST
+            value: "*4"
+          - name: PGRST_SERVER_PORT
+            value: "3000"
+          - name: PGRST_JWT_SECRET
+            value: "you_should_change_this"
+        volumes:
+        - name: postgrest-config
+          hostPath:
+            path: /Users/jiayu/GitHub/postgrest-authz-service/postgrest.conf

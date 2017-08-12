@@ -39,5 +39,3 @@ services:
       - "postgrest:postgrest"
     ports:
       - "8080:8080"
-    environment:
-      SWAGGER_JSON: http://postgrest:3000
