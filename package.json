@@ -7,6 +7,8 @@
   "author": "Jiayu Liu <jiayu@caicloud.io>",
   "license": "MIT",
   "scripts": {
+    "prettier": "prettier --no-semi --single-quote --write 'test/**/*.js'",
+    "lint": "standard --verbose | snazzy",
     "test": "mocha"
   },
   "devDependencies": {
