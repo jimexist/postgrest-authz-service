@@ -6,12 +6,16 @@
   "repository": "https://github.com/Jimexist/postgrest-authz-service",
   "author": "Jiayu Liu <jiayu@caicloud.io>",
   "license": "MIT",
+  "scripts": {
+    "test": "mocha"
+  },
   "devDependencies": {
     "babel-cli": "^6.24.1",
     "chai": "^4.1.1",
     "mocha": "^3.5.0",
     "prettier": "^1.5.3",
     "snazzy": "^7.0.0",
-    "standard": "^10.0.3"
+    "standard": "^10.0.3",
+    "supertest": "^3.0.0"
   }
 }
