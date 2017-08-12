@@ -1,23 +1,43 @@
-version: '3'
+version: '3.2'
 
 services:
 
   postgres:
-    image: postgres
+    image: postgres:9.6-alpine
     ports:
       - "5432:5432"
+    volumes:
+      - type: bind
+        source: ./create-models.sql
+        target: /docker-entrypoint-initdb.d/create-models.sql
     environment:
       POSTGRES_DB: authz
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: pass
 
   postgrest:
-    image: begriffs/postgrest
+    image: begriffs/postgrest:v0.4.2.0
     ports:
       - "3000:3000"
     links:
       - postgres:postgres
+    volumes:
+      - type: bind
+        source: ./postgrest.conf
+        target: /etc/postgrest.conf
     environment:
       PGRST_DB_URI: postgres://postgres:pass@postgres:5432/authz
       PGRST_DB_SCHEMA: public
       PGRST_DB_ANON_ROLE: postgres
+      PGRST_SERVER_HOST: "*4"
+      PGRST_SERVER_PORT: 3000
+      PGRST_JWT_SECRET: "you_should_change_this"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui:latest
+    links:
+      - "postgrest:postgrest"
+    ports:
+      - "8080:8080"
+    environment:
+      SWAGGER_JSON: http://postgrest:3000
