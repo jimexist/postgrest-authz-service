@@ -1,0 +1,17 @@
+{
+  "name": "postgrest-authz-service",
+  "version": "0.1.0",
+  "description": "postgrest as an authz service",
+  "main": "index.js",
+  "repository": "https://github.com/Jimexist/postgrest-authz-service",
+  "author": "Jiayu Liu <jiayu@caicloud.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-cli": "^6.24.1",
+    "chai": "^4.1.1",
+    "mocha": "^3.5.0",
+    "prettier": "^1.5.3",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.3"
+  }
+}
