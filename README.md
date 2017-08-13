@@ -42,7 +42,7 @@ you can easily adjust it to your needs.
 
 ## Test as a demo
 
-You can checkout `test/index.js` as a demo for how the APIs will look like. It
+You can checkout [`test/index.js`](https://github.com/Jimexist/postgrest-authz-service/blob/master/test/index.js) as a demo for how the APIs will look like. It
 is written in Node.js and if you want to run it yourself, make sure you do the
 following to setup environment first.
 
@@ -50,7 +50,7 @@ following to setup environment first.
 
 1. install docker and docker-compose
 2. install Node.js and [yarn](https://yarnpkg.com/)
-3. make sure your local `3000` and `5432` ports aren't taken, otherwise change
+3. make sure your local `3000` and `8080` ports aren't taken, otherwise change
    `docker-compose.yml`
 4. run `docker-compose up` and wait for *connection successful* log, so that you
    know `PostgREST` has successfully connected to the database
