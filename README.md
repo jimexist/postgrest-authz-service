@@ -72,4 +72,4 @@ available at `http://localhost:8080`, make sure you change the docs address to
 
 ![Swagger API Screenshot](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/swagger_api.png)
 
-![Swagger API Screenshot - RPC](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/swagger_api_prc.png)
+![Swagger API Screenshot - RPC](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/swagger_api_rpc.png)
