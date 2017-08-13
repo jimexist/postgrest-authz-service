@@ -33,19 +33,17 @@ create table if not exists access_lists (
 
 create index resource_id_idx on access_lists (resource_id);
 
-create or replace function check_acl (input_user_id integer, input_resource_id integer)
-  returns ACCESS_TYPE AS $$
-BEGIN
+create or replace function check_acl (user_id integer, resource_id integer)
+returns ACCESS_TYPE AS $$
   with recursive all_subordinates(id) as (
-      select id from users where supervisor_id = input_user_id
+      select id from users where id = $1
     union
       select u.id
       from all_subordinates as c inner join users as u on u.supervisor_id = c.id
   )
-  select access_type
+  select a.access_type
   from all_subordinates as u
   inner join access_lists as a on a.user_id = u.id
   inner join resources as r on a.resource_id = r.id
-  where r.id = input_resource_id;
-END;
-$$ LANGUAGE plpgsql;
+  where r.id = $2;
+$$ LANGUAGE sql immutable strict;
