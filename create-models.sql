@@ -1,24 +1,20 @@
-
--- 用户
 create table if not exists users (
-  id serial not null primary key,
-  user_id text not null unique,
-  is_active boolean not null default 'true',
+  id integer not null primary key,
+  title text not null,
   supervisor_id integer null references users(id) on delete set null,
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
 
-create index supervisor_id_index on users (supervisor_id);
+create index supervisor_id_idx on users (supervisor_id);
 
-create type RESOURCE_TYPE as enum ('storage', 'experiment');
+create type RESOURCE_TYPE as enum ('storage', 'project');
 
 -- 资源
 create table if not exists resources (
-  id serial not null primary key,
-  resource_id text not null unique,
+  id integer not null primary key,
+  name text not null,
   resource_type RESOURCE_TYPE not null,
-  is_active boolean not null default 'true',
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
@@ -35,29 +31,21 @@ create table if not exists access_lists (
   primary key (user_id, resource_id)
 );
 
-create or replace view users_and_resources as
-  select u.id as uid, u.user_id, r.id as rid, r.resource_id, r.resource_type, a.access_type
-  from users as u
-  inner join access_lists as a on u.id = a.user_id
-  inner join resources as r on r.id = a.resource_id
-  where u.is_active = 'true' and r.is_active = 'true';
+create index resource_id_idx on access_lists (resource_id);
 
-create or replace view users_and_direct_reports as
-  select u1.id as id,
-         u1.user_id as user_id,
-         u2.id as direct_report_id,
-         u2.user_id as direct_report_user_id
-  from users as u1 inner join users as u2 on u1.id = u2.supervisor_id
-  where u1.is_active = 'true' and u2.is_active = 'true';
-
-create or replace view users_and_all_team as
-  with recursive find_children(id) as (
-    select u.id, u.user_id, u.supervisor_id
-    from users as u
-    where u.is_active = 'true' and u.supervisor_id = id
+create or replace function check_acl (input_user_id integer, input_resource_id integer)
+  returns ACCESS_TYPE AS $$
+BEGIN
+  with recursive all_subordinates(id) as (
+      select id from users where supervisor_id = input_user_id
     union
-    select u.id, u.user_id, u.supervisor_id
-    from find_children as f join users as u
-    on u.supervisor_id = f.id
-    where u.is_active = 'true'
-  ) select * from find_children;
+      select u.id
+      from all_subordinates as c inner join users as u on u.supervisor_id = c.id
+  )
+  select access_type
+  from all_subordinates as u
+  inner join access_lists as a on a.user_id = u.id
+  inner join resources as r on a.resource_id = r.id
+  where r.id = input_resource_id;
+END;
+$$ LANGUAGE plpgsql;
