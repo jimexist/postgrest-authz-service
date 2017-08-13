@@ -40,6 +40,39 @@ In this example, I used a very simple model:
 Notice that resources do not have this type of hierarchy, but as mentioned above,
 you can easily adjust it to your needs.
 
+### Postgres CTE
+
+If you wonder how the recursive ACL checking is done, there is a very powerful
+language struct in Postgres called [recursive common table expressions](https://www.postgresql.org/docs/current/static/queries-with.html),
+with which you can do recursive queries and union their results together.
+
+This can save you a lot of coding (when done in non-pg languages e.g. Java or
+Go), and also a lot of roundtrip queries. With proper index setup, this can also
+be quite fast. Below is the query plan for the recursive CTE used in this example:
+
+```
+Nested Loop  (cost=273.90..293.68 rows=17 width=4)
+  CTE all_subordinates
+    ->  Recursive Union  (cost=0.15..259.31 rows=481 width=4)
+          ->  Index Only Scan using users_pkey on users  (cost=0.15..8.17 rows=1 width=4)
+                Index Cond: (id = 1)
+          ->  Hash Join  (cost=0.33..24.15 rows=48 width=4)
+                Hash Cond: (u_1.supervisor_id = c.id)
+                ->  Seq Scan on users u_1  (cost=0.00..19.70 rows=970 width=8)
+                ->  Hash  (cost=0.20..0.20 rows=10 width=4)
+                      ->  WorkTable Scan on all_subordinates c  (cost=0.00..0.20 rows=10 width=4)
+  ->  Index Only Scan using resources_pkey on resources r  (cost=0.15..8.17 rows=1 width=4)
+        Index Cond: (id = 2)
+  ->  Hash Join  (cost=14.44..26.03 rows=17 width=8)
+        Hash Cond: (u.id = a.user_id)
+        ->  CTE Scan on all_subordinates u  (cost=0.00..9.62 rows=481 width=4)
+        ->  Hash  (cost=14.35..14.35 rows=7 width=12)
+              ->  Bitmap Heap Scan on access_lists a  (cost=4.21..14.35 rows=7 width=12)
+                    Recheck Cond: (resource_id = 2)
+                    ->  Bitmap Index Scan on resource_id_idx  (cost=0.00..4.21 rows=7 width=0)
+                          Index Cond: (resource_id = 2)
+```
+
 ## Test as a demo
 
 You can checkout [`test/index.js`](https://github.com/Jimexist/postgrest-authz-service/blob/master/test/index.js) as a demo for how the APIs will look like. It
