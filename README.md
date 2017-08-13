@@ -23,6 +23,9 @@ Given that, you can build an authz service with just your SQL model, and no
 other coding required. It is also flexible enough so that you can change your
 schema, logic, etc. within minimal time.
 
+**TLDR;**: all you need to write is the `create-model.sql`, and then you'll
+get a up-and-running authorization service within a minute!
+
 ## Authz model
 
 In this example, I used a very simple model:
