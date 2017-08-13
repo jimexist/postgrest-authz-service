@@ -57,3 +57,10 @@ following to setup environment first.
 If you run the tests again you will see some errors, because the model ids
 conflict. This is the expected behavior, and you can free to change tests and
 apply some deletion logic as well.
+
+## Swagger and Open API
+
+As mentioned in the docs of `PostgREST` you can also use swagger to see the API
+documentation. If you run the `docker-compose` a swagger UI server is already
+available at `http://localhost:8080`, make sure you change the docs address to
+`http://localhost:3000` in order to see the `PostgREST` exposed APIs.
