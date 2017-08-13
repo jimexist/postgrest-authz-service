@@ -46,6 +46,8 @@ You can checkout [`test/index.js`](https://github.com/Jimexist/postgrest-authz-s
 is written in Node.js and if you want to run it yourself, make sure you do the
 following to setup environment first.
 
+![Test Screenshot](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/mocha_test.png)
+
 ### Environment setup
 
 1. install docker and docker-compose
@@ -67,3 +69,7 @@ As mentioned in the docs of `PostgREST` you can also use swagger to see the API
 documentation. If you run the `docker-compose` a swagger UI server is already
 available at `http://localhost:8080`, make sure you change the docs address to
 `http://localhost:3000` in order to see the `PostgREST` exposed APIs.
+
+![Swagger API Screenshot](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/swagger_api.png)
+
+![Swagger API Screenshot - RPC](https://github.com/Jimexist/postgrest-authz-service/raw/master/screenshots/swagger_api_prc.png)
