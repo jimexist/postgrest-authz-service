@@ -40,7 +40,7 @@ In this example, I used a very simple model:
 Notice that resources do not have this type of hierarchy, but as mentioned above,
 you can easily adjust it to your needs.
 
-### Postgres CTE
+### Postgres Recursive CTE
 
 If you wonder how the recursive ACL checking is done, there is a very powerful
 language struct in Postgres called [recursive common table expressions](https://www.postgresql.org/docs/current/static/queries-with.html),
@@ -48,7 +48,21 @@ with which you can do recursive queries and union their results together.
 
 This can save you a lot of coding (when done in non-pg languages e.g. Java or
 Go), and also a lot of roundtrip queries. With proper index setup, this can also
-be quite fast. Below is the query plan for the recursive CTE used in this example:
+be quite fast. Below is the query plan for the recursive CTE [used in this example](https://github.com/Jimexist/postgrest-authz-service/blob/63904c039069a3d08d2cec14dd14069c20f26c99/create-models.sql#L36):
+
+```sql
+explain with recursive all_subordinates(id) as (
+      select id from users where id = 1
+    union
+      select u.id
+      from all_subordinates as c inner join users as u on u.supervisor_id = c.id
+  )
+  select a.access_type
+  from all_subordinates as u
+  inner join access_lists as a on a.user_id = u.id
+  inner join resources as r on a.resource_id = r.id
+  where r.id = 2;
+```
 
 ```
 Nested Loop  (cost=273.90..293.68 rows=17 width=4)
