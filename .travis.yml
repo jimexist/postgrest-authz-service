@@ -1,0 +1,11 @@
+sudo: required
+
+language: node_js
+
+node_js:
+  - "lts/*"
+  - "8"
+  - "node"
+
+services:
+  - docker
